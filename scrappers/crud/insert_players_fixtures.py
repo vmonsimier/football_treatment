@@ -1,19 +1,16 @@
-from operator import index
 import sys
-from os import listdir
-from os.path import isfile, join
 import csv
 import itertools
 
 sys.path.append('/home/valentinm/Documents/football/football_treatment/')
 
 import database
+from common import retrieve_fbref_files
 from fbref_to_db_columns_db import get_map_columns
 
-base_path = '/home/valentinm/Documents/football/datafiles/fixtures_data'
 
 def exec(type, league, year):
-    files = retrieve_files(type, league, year)
+    files = retrieve_fbref_files(type, league, year)
     print(len(files))
 
     batch_ins = []
@@ -24,21 +21,9 @@ def exec(type, league, year):
         batch_ins.append(format_d)
         batch_ins = list(itertools.chain(*batch_ins))
 
+    print(batch_ins)
     # split and insert by 1000 rows
     #conn = database.connect()
-
-def retrieve_files(type, league, year):
-    """Retrieve files to insert from folder"""
-    folders = retrieve_folders(type, league)
-    files = [join(folders[0], f) for f in listdir(folders[0]) if isfile(join(folders[0], f)) and year in f]
-
-    return files
-
-def retrieve_folders(type, league):
-    """Retrieve folders where files are stored"""
-    folders = [base_path + '/{0}/{1}/'.format(league, type)]
-
-    return folders
 
 def get_csv_data(filename):
     """Read csv file and get data"""
